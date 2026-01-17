@@ -350,8 +350,7 @@ export const CardDetailPage = () => {
                                             type="date"
                                             value={newNoteDate}
                                             onChange={(e) => setNewNoteDate(e.target.value)}
-                                            className="rounded-md border-gray-300 shadow-sm sm:text-sm text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white p-1 border"
-
+                                            className="rounded-md border-gray-300 shadow-sm sm:text-sm bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white p-1 border"
                                         />
                                     </div>
                                     <div className="mb-2">

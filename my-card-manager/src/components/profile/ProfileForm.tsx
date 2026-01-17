@@ -138,7 +138,7 @@ export const ProfileForm = ({ initialData, onSuccess, onCancel }: ProfileFormPro
                             type="date"
                             value={toDateString(formData.startDate)}
                             onChange={(e) => setFormData({ ...formData, startDate: fromDateString(e.target.value) })}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2 border"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2 border"
                         />
                     </div>
                     <div>
@@ -150,7 +150,7 @@ export const ProfileForm = ({ initialData, onSuccess, onCancel }: ProfileFormPro
                             disabled={formData.isCurrent}
                             value={toDateString(formData.endDate)}
                             onChange={(e) => setFormData({ ...formData, endDate: fromDateString(e.target.value) })}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2 border disabled:bg-gray-100 dark:disabled:bg-gray-800"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2 border disabled:bg-gray-100 dark:disabled:bg-gray-800"
                         />
                     </div>
                 </div>
