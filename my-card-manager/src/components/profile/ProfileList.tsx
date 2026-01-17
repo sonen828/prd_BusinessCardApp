@@ -71,6 +71,13 @@ export const ProfileList = () => {
                                             {profile.position}
                                         </p>
                                     )}
+                                    {(profile.startDate || profile.endDate || profile.isCurrent) && (
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            {profile.startDate ? profile.startDate.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit' }) : '????/??'}
+                                            {' - '}
+                                            {profile.isCurrent ? '現在' : (profile.endDate ? profile.endDate.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit' }) : '????/??')}
+                                        </p>
+                                    )}
                                     {profile.email && (
                                         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                                             {profile.email}

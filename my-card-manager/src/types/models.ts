@@ -42,6 +42,9 @@ export interface MyProfile {
     phone?: string;
     address?: string;
     cardImage?: Blob;
+    startDate?: Date;
+    endDate?: Date;
+    isCurrent?: boolean;
     displayOrder: number;
     createdAt: Date;
     updatedAt: Date;

@@ -113,6 +113,13 @@ export const ProfileManagePage = () => {
                                                     <p className="text-primary-600 font-medium">
                                                         {profile.position || '役職なし'}
                                                     </p>
+                                                    {(profile.startDate || profile.endDate || profile.isCurrent) && (
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                            📅 {profile.startDate ? profile.startDate.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit' }) : '????/??'}
+                                                            {' 〜 '}
+                                                            {profile.isCurrent ? '現在' : (profile.endDate ? profile.endDate.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit' }) : '????/??')}
+                                                        </p>
+                                                    )}
                                                     <div className="mt-4 space-y-1 text-sm text-gray-500 dark:text-gray-400">
                                                         {profile.email && <p>{profile.email}</p>}
                                                         {profile.phone && <p>{profile.phone}</p>}
