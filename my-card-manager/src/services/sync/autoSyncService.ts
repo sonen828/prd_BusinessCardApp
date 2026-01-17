@@ -187,6 +187,48 @@ class AutoSyncService {
     }
 
     /**
+     * Restore from backup without being logged in
+     * Used on the login page to import an existing account
+     */
+    async restoreFromBackup(): Promise<boolean> {
+        if (!fileSyncService.checkBrowserSupport()) {
+            throw new Error('お使いのブラウザは同期機能に対応していません。ChromeまたはEdgeをご使用ください。');
+        }
+
+        try {
+            const dirHandle = await fileSyncService.requestFolderAccess();
+            if (!dirHandle) return false;
+
+            const remoteData = await fileSyncService.loadFromFolder(dirHandle);
+            if (!remoteData) {
+                alert('指定されたフォルダにバックアップファイルが見つかりませんでした。');
+                return false;
+            }
+
+            // Confirm import
+            const remoteDate = new Date(remoteData.exportedAt);
+            if (!confirm(`バックアップが見つかりました（${remoteDate.toLocaleString()}）。\nデータを復元してログイン可能な状態にしますか？`)) {
+                return false;
+            }
+
+            // Perform full import
+            await this.importAllData(remoteData);
+
+            // Store handle to enable auto-sync automatically
+            this.dirHandle = dirHandle;
+            await fileSyncService.storeDirHandle(dirHandle);
+
+            alert('データの復元が完了しました。以前のメールアドレスとパスワードでログインしてください。');
+            this.notifyStatusChange();
+            return true;
+        } catch (error) {
+            console.error('Restoration failed:', error);
+            alert('復元に失敗しました。ファイルが正しくないか、破損している可能性があります。');
+            return false;
+        }
+    }
+
+    /**
      * Check for conflicts between local and remote data
      * Returns true if remote should be used
      */
@@ -250,6 +292,10 @@ class AutoSyncService {
         const cardTags = await db.cardTags.where('tagId').anyOf(tagIds).toArray();
         const interactionNotes = await db.interactionNotes.where('cardId').anyOf(cardIds).toArray();
 
+        // Get user and settings
+        const user = await db.users.get(userId);
+        const userSettings = await db.userSettings.where('userId').equals(userId).toArray();
+
         // Convert images to Base64
         const imagesBase64 = await Promise.all(images.map(async (img) => {
             const base64 = await this.blobToBase64(img.imageData as Blob);
@@ -266,6 +312,9 @@ class AutoSyncService {
             tags,
             cardTags,
             interactionNotes,
+            // New fields for cross-device support
+            users: user ? [user] : [],
+            userSettings,
         };
     }
 
@@ -276,8 +325,16 @@ class AutoSyncService {
 
         await db.transaction(
             'rw',
-            [db.myProfiles, db.businessCards, db.businessCardImages, db.tags, db.cardTags, db.interactionNotes],
+            [db.myProfiles, db.businessCards, db.businessCardImages, db.tags, db.cardTags, db.interactionNotes, db.users, db.userSettings],
             async () => {
+                // Restore Users (if present)
+                if (data.users) {
+                    await db.users.bulkPut(data.users);
+                }
+                if (data.userSettings) {
+                    await db.userSettings.bulkPut(data.userSettings);
+                }
+
                 // Restore Profiles
                 await db.myProfiles.bulkPut(data.profiles);
 

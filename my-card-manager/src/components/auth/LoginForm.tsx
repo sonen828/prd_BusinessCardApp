@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAuthStore } from '../../stores/authStore';
 import { useNavigate, Link } from 'react-router-dom';
+import { autoSyncService } from '../../services/sync/autoSyncService';
+import { FolderSync } from 'lucide-react';
 
 export const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -13,6 +15,19 @@ export const LoginForm = () => {
         const success = await login(email, password);
         if (success) {
             navigate('/');
+        }
+    };
+
+    const handleRestore = async () => {
+        try {
+            const success = await autoSyncService.restoreFromBackup();
+            if (success) {
+                // Restoration success alert is handled inside the service
+                // No redirect needed, user just stays on login page to login
+            }
+        } catch (error) {
+            console.error('Restore handle failed:', error);
+            alert(error instanceof Error ? error.message : '復元に失敗しました');
         }
     };
 
@@ -68,11 +83,25 @@ export const LoginForm = () => {
                 </button>
             </form>
 
-            <div className="text-center text-sm">
-                <span className="text-gray-600 dark:text-gray-400">アカウントをお持ちでないですか？ </span>
-                <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
-                    新規登録
-                </Link>
+            <div className="text-center text-sm space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div>
+                    <span className="text-gray-600 dark:text-gray-400">アカウントをお持ちでないですか？ </span>
+                    <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+                        新規登録
+                    </Link>
+                </div>
+
+                <div className="pt-2">
+                    <p className="text-xs text-gray-500 mb-2">別のPCからデータを引き継ぎたい場合：</p>
+                    <button
+                        type="button"
+                        onClick={handleRestore}
+                        className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-300 rounded hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors"
+                    >
+                        <FolderSync className="w-4 h-4 mr-2" />
+                        同期フォルダから復元
+                    </button>
+                </div>
             </div>
         </div>
     );
