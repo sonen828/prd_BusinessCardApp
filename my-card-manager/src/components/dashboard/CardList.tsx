@@ -1,7 +1,6 @@
 import { BusinessCard } from '../../types/models';
-import { Mail, Building2, MapPin, Tag as TagIcon, ArrowRight } from 'lucide-react';
+import { Mail, Building2, MapPin, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCardStore } from '../../stores/cardStore';
 import { useEffect, useState } from 'react';
 import { tagService } from '../../services/db/tagService';
 import { Tag } from '../../types/models';
