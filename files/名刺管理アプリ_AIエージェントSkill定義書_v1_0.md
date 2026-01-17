@@ -1,7 +1,8 @@
 # 名刺管理アプリ AIエージェント Skill定義書
 
 **作成日:** 2025年1月17日  
-**バージョン:** 1.0
+**バージョン:** 2.0  
+**最終更新日:** 2026年1月18日
 
 ---
 
@@ -1360,3 +1361,4 @@ const decryptApiKey = async (
 | Ver | 日付 | 内容 |
 |-----|------|------|
 | 1.0 | 2025/01/17 | 初版作成 |
+| 2.0 | 2026/01/18 | OCR Skillの実装をGemini 3 Flash PreviewにImage-to-JSONで統合、responseMimeType: application/jsonを使用する形式に変更。Tesseract.jsへのフォールバックは未実装。 |
