@@ -167,7 +167,9 @@ const CardRow = ({
                     </div>
                     <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {card.personName}
+                            <Link to={`/cards/${card.id}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                                {card.personName}
+                            </Link>
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
                             <Building2 className="w-3 h-3 mr-1" />

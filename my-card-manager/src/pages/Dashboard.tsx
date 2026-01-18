@@ -12,7 +12,7 @@ export const Dashboard = () => {
     const { user } = useAuthStore();
     const { cards, loadCards, isLoading, filter } = useCardStore();
     const { profiles, loadProfiles } = useProfileStore();
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
 
     // In a real app, we likely have a "current profile" context
     // For now, let's assume we load cards for the first profile or all user's cards?
@@ -75,8 +75,8 @@ export const Dashboard = () => {
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`p - 2 rounded - md transition - colors ${viewMode === 'grid'
-                                        ? 'bg-gray-100 text-primary-600 dark:bg-gray-700 dark:text-primary-400'
-                                        : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                                    ? 'bg-gray-100 text-primary-600 dark:bg-gray-700 dark:text-primary-400'
+                                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                                     } `}
                                 title="グリッド表示"
                             >
@@ -85,8 +85,8 @@ export const Dashboard = () => {
                             <button
                                 onClick={() => setViewMode('list')}
                                 className={`p - 2 rounded - md transition - colors ${viewMode === 'list'
-                                        ? 'bg-gray-100 text-primary-600 dark:bg-gray-700 dark:text-primary-400'
-                                        : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                                    ? 'bg-gray-100 text-primary-600 dark:bg-gray-700 dark:text-primary-400'
+                                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                                     } `}
                                 title="リスト表示"
                             >

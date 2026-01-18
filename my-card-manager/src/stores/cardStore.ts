@@ -21,6 +21,8 @@ interface CardState {
     setFilter: (filter: FilterConfig) => void;
     setSort: (sort: SortConfig) => void;
     clearSelection: () => void;
+    uploadImage: (cardId: string, file: File) => Promise<boolean>;
+    deleteImage: (imageId: string) => Promise<boolean>;
 }
 
 export const useCardStore = create<CardState>((set, get) => ({
@@ -108,4 +110,33 @@ export const useCardStore = create<CardState>((set, get) => ({
     setFilter: (filter) => set({ filter }),
     setSort: (sort) => set({ sort }),
     clearSelection: () => set({ selectedCard: null, selectedCardImages: [] }),
+
+    uploadImage: async (cardId: string, file: File) => {
+        set({ isLoading: true, error: null });
+        try {
+            await cardService.saveImage(cardId, file, 'other', get().selectedCardImages.length);
+            const images = await cardService.getImages(cardId);
+            set({ selectedCardImages: images, isLoading: false });
+            return true;
+        } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            return false;
+        }
+    },
+
+    deleteImage: async (imageId: string) => {
+        const cardId = get().selectedCard?.id;
+        if (!cardId) return false;
+
+        set({ isLoading: true, error: null });
+        try {
+            await cardService.deleteImage(imageId);
+            const images = await cardService.getImages(cardId);
+            set({ selectedCardImages: images, isLoading: false });
+            return true;
+        } catch (error) {
+            set({ error: (error as Error).message, isLoading: false });
+            return false;
+        }
+    },
 }));

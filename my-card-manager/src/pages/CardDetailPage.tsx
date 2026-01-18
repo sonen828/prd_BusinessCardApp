@@ -13,7 +13,7 @@ export const CardDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const { selectedCard: card, selectedCardImages: images, loadCardDetail, updateCard, deleteCard, isLoading, error } = useCardStore();
+    const { selectedCard: card, selectedCardImages: images, loadCardDetail, updateCard, deleteCard, uploadImage, deleteImage, isLoading, error } = useCardStore();
     const { getProfileName } = useProfileStore();
 
     const [isEditing, setIsEditing] = useState(false);
@@ -131,6 +131,17 @@ export const CardDetailPage = () => {
         setIsEditing(false);
     };
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !card) return;
+        await uploadImage(card.id, file);
+    };
+
+    const handleImageDelete = async (imageId: string) => {
+        if (!confirm('画像を削除しますか？')) return;
+        await deleteImage(imageId);
+    };
+
     // Helper for editable field
     const EditableField = ({
         label,
@@ -219,26 +230,44 @@ export const CardDetailPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left Column: Image (1 col) */}
                     <div className="space-y-4">
-                        <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border dark:border-gray-700">
-                            {images.length > 0 ? (
+                        {images.map((img, index) => (
+                            <div key={img.id} className="relative group bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border dark:border-gray-700">
                                 <img
-                                    src={URL.createObjectURL(images[0].imageData)}
-                                    alt="Business Card Front"
+                                    src={URL.createObjectURL(img.imageData)}
+                                    alt={`Business Card ${img.imageType} ${index}`}
                                     className="w-full h-auto rounded"
                                 />
-                            ) : (
-                                <div className="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400">
-                                    No Image
+                                {isEditing && (
+                                    <button
+                                        onClick={() => handleImageDelete(img.id)}
+                                        className="absolute top-4 right-4 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                        title="画像を削除"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                )}
+                                <div className="absolute bottom-4 left-4 px-2 py-0.5 bg-black/50 text-white text-[10px] rounded uppercase">
+                                    {img.imageType === 'front' ? '表面' : img.imageType === 'back' ? '裏面' : 'その他'}
                                 </div>
-                            )}
-                        </div>
-                        {images.length > 1 && (
-                            <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border dark:border-gray-700">
-                                <img
-                                    src={URL.createObjectURL(images[1].imageData)}
-                                    alt="Business Card Back"
-                                    className="w-full h-auto rounded"
-                                />
+                            </div>
+                        ))}
+
+                        {images.length === 0 && !isEditing && (
+                            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm border dark:border-gray-700 border-dashed flex flex-col items-center justify-center text-gray-400">
+                                <Plus className="w-8 h-8 mb-2 opacity-20" />
+                                <span className="text-sm">画像なし</span>
+                            </div>
+                        )}
+
+                        {isEditing && (
+                            <div className="relative">
+                                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <Plus className="w-8 h-8 mb-2 text-gray-400" />
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">画像を追加</p>
+                                    </div>
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                                </label>
                             </div>
                         )}
                     </div>

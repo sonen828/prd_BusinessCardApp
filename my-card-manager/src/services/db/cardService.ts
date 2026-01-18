@@ -137,5 +137,10 @@ export const cardService = {
 
     async getImages(cardId: string): Promise<BusinessCardImage[]> {
         return db.businessCardImages.where('cardId').equals(cardId).sortBy('displayOrder');
+    },
+
+    async deleteImage(imageId: string): Promise<void> {
+        await db.businessCardImages.delete(imageId);
+        autoSyncService.autoSave();
     }
 };
