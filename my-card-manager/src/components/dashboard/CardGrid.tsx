@@ -4,6 +4,7 @@ import { Building2, Mail, Phone, Calendar } from 'lucide-react';
 import { db } from '../../services/db'; // Import db to access images (simplified) or pass images as prop
 import { useEffect, useState } from 'react';
 import { StarRating } from '../common/StarRating';
+import { useProfileStore } from '../../stores/profileStore';
 
 interface CardGridProps {
     cards: BusinessCard[];
@@ -11,17 +12,31 @@ interface CardGridProps {
 
 export const CardGrid = ({ cards }: CardGridProps) => {
     const navigate = useNavigate();
+    const { getProfileName } = useProfileStore();
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {cards.map((card) => (
-                <CardGridItem key={card.id} card={card} onClick={() => navigate(`/cards/${card.id}`)} />
+                <CardGridItem
+                    key={card.id}
+                    card={card}
+                    profileName={getProfileName(card.profileId)}
+                    onClick={() => navigate(`/cards/${card.id}`)}
+                />
             ))}
         </div>
     );
 };
 
-const CardGridItem = ({ card, onClick }: { card: BusinessCard; onClick: () => void }) => {
+const CardGridItem = ({
+    card,
+    profileName,
+    onClick
+}: {
+    card: BusinessCard;
+    profileName: string;
+    onClick: () => void;
+}) => {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
 
     // Fetch implementation simplifies fetching the first image for thumbnail
@@ -59,9 +74,14 @@ const CardGridItem = ({ card, onClick }: { card: BusinessCard; onClick: () => vo
                     <h3 className="font-bold text-lg text-gray-900 dark:text-white truncate">
                         {card.personName}
                     </h3>
-                    <p className="text-sm text-primary-600 font-medium truncate">
-                        {card.title || card.position || '役職なし'}
-                    </p>
+                    <div className="flex items-center space-x-2">
+                        <p className="text-sm text-primary-600 font-medium truncate">
+                            {card.title || card.position || '役職なし'}
+                        </p>
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border dark:border-gray-600 truncate max-w-[100px]" title={`自分の所属: ${profileName}`}>
+                            {profileName}
+                        </span>
+                    </div>
                 </div>
 
                 <div className="space-y-1 text-sm text-gray-500 dark:text-gray-400 flex-1">

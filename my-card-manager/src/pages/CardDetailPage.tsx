@@ -7,12 +7,14 @@ import { tagService } from '../services/db/tagService';
 import { interactionService } from '../services/db/interactionService';
 import { useAuthStore } from '../stores/authStore';
 import { StarRating } from '../components/common/StarRating';
+import { useProfileStore } from '../stores/profileStore';
 
 export const CardDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const { loadCardDetail, selectedCard, selectedCardImages, deleteCard, updateCard, isLoading, error } = useCardStore();
+    const { selectedCard: card, selectedCardImages: images, loadCardDetail, updateCard, deleteCard, isLoading, error } = useCardStore();
+    const { getProfileName } = useProfileStore();
 
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState<Partial<BusinessCard>>({});
@@ -61,7 +63,7 @@ export const CardDetailPage = () => {
     };
 
     const handleAddTag = async () => {
-        if (!user || !selectedCard || !newTagName.trim()) return;
+        if (!user || !card || !newTagName.trim()) return;
 
         try {
             // Check if tag exists by name
@@ -76,8 +78,8 @@ export const CardDetailPage = () => {
             }
 
             // Assign
-            await tagService.assignToCard(selectedCard.id, tagId);
-            await loadTags(selectedCard.id);
+            await tagService.assignToCard(card.id, tagId);
+            await loadTags(card.id);
             setNewTagName('');
             setIsAddingTag(false);
         } catch (e) {
@@ -87,18 +89,18 @@ export const CardDetailPage = () => {
     };
 
     const handleRemoveTag = async (tagId: string) => {
-        if (!selectedCard) return;
+        if (!card) return;
         if (!confirm('タグを解除しますか？')) return;
-        await tagService.removeFromCard(selectedCard.id, tagId);
-        await loadTags(selectedCard.id);
+        await tagService.removeFromCard(card.id, tagId);
+        await loadTags(card.id);
     };
 
     const handleAddNote = async () => {
-        if (!selectedCard || !newNoteContent.trim() || !newNoteDate) return;
+        if (!card || !newNoteContent.trim() || !newNoteDate) return;
 
         try {
-            await interactionService.addNote(selectedCard.id, newNoteContent, new Date(newNoteDate));
-            await loadNotes(selectedCard.id);
+            await interactionService.addNote(card.id, newNoteContent, new Date(newNoteDate));
+            await loadNotes(card.id);
             setNewNoteContent('');
             setIsAddingNote(false);
         } catch (e) {
@@ -109,23 +111,23 @@ export const CardDetailPage = () => {
 
 
     useEffect(() => {
-        if (selectedCard) {
-            setFormData(selectedCard);
+        if (card) {
+            setFormData(card);
         }
-    }, [selectedCard]);
+    }, [card]);
 
     if (isLoading) return <div className="p-8 text-center">Loading...</div>;
-    if (error || !selectedCard) return <div className="p-8 text-center text-red-500">Card not found</div>;
+    if (error || !card) return <div className="p-8 text-center text-red-500">Card not found</div>;
 
     const handleDelete = async () => {
         if (confirm('本当に削除しますか？')) {
-            await deleteCard(selectedCard.id);
+            await deleteCard(card.id);
             navigate('/');
         }
     };
 
     const handleSave = async () => {
-        await updateCard(selectedCard.id, formData);
+        await updateCard(card.id, formData);
         setIsEditing(false);
     };
 
@@ -175,6 +177,9 @@ export const CardDetailPage = () => {
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                             名刺詳細
                         </h1>
+                        <span className="ml-4 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border dark:border-gray-600">
+                            自分の所属: {getProfileName(card.profileId)}
+                        </span>
                     </div>
                     <div className="flex space-x-2">
                         {isEditing ? (
@@ -215,9 +220,9 @@ export const CardDetailPage = () => {
                     {/* Left Column: Image (1 col) */}
                     <div className="space-y-4">
                         <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border dark:border-gray-700">
-                            {selectedCardImages.length > 0 ? (
+                            {images.length > 0 ? (
                                 <img
-                                    src={URL.createObjectURL(selectedCardImages[0].imageData)}
+                                    src={URL.createObjectURL(images[0].imageData)}
                                     alt="Business Card Front"
                                     className="w-full h-auto rounded"
                                 />
@@ -227,10 +232,10 @@ export const CardDetailPage = () => {
                                 </div>
                             )}
                         </div>
-                        {selectedCardImages.length > 1 && (
+                        {images.length > 1 && (
                             <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border dark:border-gray-700">
                                 <img
-                                    src={URL.createObjectURL(selectedCardImages[1].imageData)}
+                                    src={URL.createObjectURL(images[1].imageData)}
                                     alt="Business Card Back"
                                     className="w-full h-auto rounded"
                                 />
@@ -264,12 +269,12 @@ export const CardDetailPage = () => {
                                     優先度
                                 </label>
                                 <StarRating
-                                    value={formData.priority ?? selectedCard.priority}
+                                    value={formData.priority ?? card.priority}
                                     onChange={(val) => {
                                         setFormData({ ...formData, priority: val });
                                         if (!isEditing) {
                                             // Auto-save priority when not in edit mode
-                                            updateCard(selectedCard.id, { priority: val });
+                                            updateCard(card.id, { priority: val });
                                         }
                                     }}
                                 />
@@ -277,8 +282,8 @@ export const CardDetailPage = () => {
 
                             <div className="pt-4 border-t border-gray-100 dark:border-gray-700 mt-4">
                                 <div className="text-xs text-gray-400">
-                                    登録日: {new Date(selectedCard.createdAt).toLocaleString()} <br />
-                                    更新日: {new Date(selectedCard.updatedAt).toLocaleString()}
+                                    登録日: {new Date(card.createdAt).toLocaleString()} <br />
+                                    更新日: {new Date(card.updatedAt).toLocaleString()}
                                 </div>
                             </div>
                         </div>

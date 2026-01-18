@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useCardStore } from '../stores/cardStore';
 import { useAuthStore } from '../stores/authStore';
+import { useProfileStore } from '../stores/profileStore';
 import { CardGrid } from '../components/dashboard/CardGrid';
 import { CardFilter } from '../components/dashboard/CardFilter';
 import { CardList } from '../components/dashboard/CardList';
@@ -10,6 +11,7 @@ import { Link } from 'react-router-dom';
 export const Dashboard = () => {
     const { user } = useAuthStore();
     const { cards, loadCards, isLoading, filter } = useCardStore();
+    const { profiles, loadProfiles } = useProfileStore();
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
     // In a real app, we likely have a "current profile" context
@@ -28,26 +30,20 @@ export const Dashboard = () => {
     useEffect(() => {
         const fetchAndLoad = async () => {
             if (user) {
-                // 1. Fetch all profiles for the user
-                const profiles = await import('../services/db/profileService').then(m => m.profileService.getAll(user.id));
-                const profileIds = profiles.map(p => p.id);
-
-                if (profileIds.length > 0) {
-                    // 2. Load cards for all these profiles
-                    // We need to support passing array to loadCards, but store expects string.
-                    // Let's update Store to accept string | string[] or just hack it here if we updated service?
-                    // Store defines: loadCards: (profileId: string) => Promise<void>; 
-                    // We should update Store type definition first.
-                    // For now, let's cast or better, update the store concurrently.
-                    await loadCards(profileIds as any);
-                } else {
-                    // No profiles => No cards
-                    // Maybe trigger empty state or just do nothing (empty list)
-                }
+                // 1. Load profiles using store
+                await loadProfiles(user.id);
             }
         };
         fetchAndLoad();
-    }, [user, loadCards, filter]);
+    }, [user, loadProfiles]);
+
+    useEffect(() => {
+        if (user && profiles.length > 0) {
+            // 2. Load cards for all profiles
+            const profileIds = profiles.map(p => p.id);
+            loadCards(profileIds);
+        }
+    }, [user, profiles, loadCards, filter]);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -78,20 +74,20 @@ export const Dashboard = () => {
                         <div className="bg-white dark:bg-gray-800 rounded-md shadow-sm p-1 flex items-center mr-2 border dark:border-gray-700">
                             <button
                                 onClick={() => setViewMode('grid')}
-                                className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
+                                className={`p - 2 rounded - md transition - colors ${viewMode === 'grid'
                                         ? 'bg-gray-100 text-primary-600 dark:bg-gray-700 dark:text-primary-400'
                                         : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-                                    }`}
+                                    } `}
                                 title="グリッド表示"
                             >
                                 <LayoutGrid className="w-5 h-5" />
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
-                                className={`p-2 rounded-md transition-colors ${viewMode === 'list'
+                                className={`p - 2 rounded - md transition - colors ${viewMode === 'list'
                                         ? 'bg-gray-100 text-primary-600 dark:bg-gray-700 dark:text-primary-400'
                                         : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-                                    }`}
+                                    } `}
                                 title="リスト表示"
                             >
                                 <List className="w-5 h-5" />

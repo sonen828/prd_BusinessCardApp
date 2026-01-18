@@ -1,5 +1,6 @@
 import { fileSyncService } from './fileSyncService';
 import { db } from '../db';
+import { useAuthStore } from '../../stores/authStore';
 
 /**
  * Auto-Sync Service
@@ -268,17 +269,10 @@ class AutoSyncService {
      * Export all data (same format as manual backup)
      */
     private async exportAllData(): Promise<any> {
-        // Get current user from auth store (we'll need to access this)
-        const authData = localStorage.getItem('auth-storage');
-        if (!authData) {
-            throw new Error('User not authenticated');
-        }
-
-        const { state } = JSON.parse(authData);
-        const userId = state?.user?.id;
+        const userId = useAuthStore.getState().user?.id;
 
         if (!userId) {
-            throw new Error('User ID not found');
+            throw new Error('User not authenticated');
         }
 
         // Export all user data

@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             token: null,
             isAuthenticated: false,
-            isLoading: false,
+            isLoading: true,
             error: null,
 
             login: async (email, password) => {
@@ -69,18 +69,19 @@ export const useAuthStore = create<AuthState>()(
             checkSession: async () => {
                 const { token } = get();
                 if (!token) {
-                    set({ isAuthenticated: false, user: null });
+                    set({ isAuthenticated: false, user: null, isLoading: false });
                     return;
                 }
+                set({ isLoading: true });
                 try {
                     const user = await authService.checkSession(token);
                     if (user) {
-                        set({ user, isAuthenticated: true });
+                        set({ user, isAuthenticated: true, isLoading: false });
                     } else {
-                        set({ user: null, token: null, isAuthenticated: false });
+                        set({ user: null, token: null, isAuthenticated: false, isLoading: false });
                     }
                 } catch (e) {
-                    set({ user: null, token: null, isAuthenticated: false });
+                    set({ user: null, token: null, isAuthenticated: false, isLoading: false });
                 }
             },
 

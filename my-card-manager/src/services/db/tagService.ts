@@ -51,5 +51,21 @@ export const tagService = {
     async removeFromCard(cardId: string, tagId: string): Promise<void> {
         await db.cardTags.where({ cardId, tagId }).delete();
         autoSyncService.autoSave();
+    },
+
+    async batchAssignToCards(cardIds: string[], tagId: string): Promise<void> {
+        await db.transaction('rw', db.cardTags, async () => {
+            for (const cardId of cardIds) {
+                const existing = await db.cardTags.get([cardId, tagId]);
+                if (!existing) {
+                    await db.cardTags.add({
+                        cardId,
+                        tagId,
+                        createdAt: new Date()
+                    });
+                }
+            }
+        });
+        autoSyncService.autoSave();
     }
 };
