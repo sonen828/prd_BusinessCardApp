@@ -29,6 +29,8 @@ export const CardRegisterPage = () => {
         personName: '',
         email: '',
         phone: '',
+        mobile: '',
+        fax: '',
     });
     const [priority, setPriority] = useState(3); // Default priority
 
@@ -72,7 +74,9 @@ export const CardRegisterPage = () => {
                     companyName: result.data?.companyName || prev.companyName,
                     personName: result.data?.personName || prev.personName,
                     email: result.data?.email || prev.email,
-                    phone: result.data?.phone || result.data?.mobile || prev.phone,
+                    phone: result.data?.phone || prev.phone,
+                    mobile: result.data?.mobile || prev.mobile,
+                    fax: result.data?.fax || prev.fax,
                     department: result.data?.department || prev.department,
                     position: result.data?.position || prev.position,
                 }));
@@ -105,6 +109,8 @@ export const CardRegisterPage = () => {
                 personName: formData.personName,
                 email: formData.email || undefined,
                 phone: formData.phone || undefined,
+                mobile: formData.mobile || undefined,
+                fax: formData.fax || undefined,
                 department: formData.department || undefined,
                 position: formData.position || undefined,
                 priority: priority,
@@ -269,12 +275,33 @@ export const CardRegisterPage = () => {
                                 />
                             </div>
 
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">携帯電話</label>
+                                    <input
+                                        type="tel"
+                                        value={formData.mobile || ''}
+                                        onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">固定電話</label>
+                                    <input
+                                        type="tel"
+                                        value={formData.phone || ''}
+                                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    />
+                                </div>
+                            </div>
+
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">電話番号</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">FAX</label>
                                 <input
                                     type="tel"
-                                    value={formData.phone || ''}
-                                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                    value={formData.fax || ''}
+                                    onChange={e => setFormData({ ...formData, fax: e.target.value })}
                                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 />
                             </div>

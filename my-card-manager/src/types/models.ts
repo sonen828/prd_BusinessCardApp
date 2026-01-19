@@ -61,6 +61,7 @@ export interface BusinessCard {
     email?: string;
     phone?: string;
     mobile?: string;
+    fax?: string;
     address?: string;
     website?: string;
     industry?: string;

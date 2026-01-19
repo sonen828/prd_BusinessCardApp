@@ -286,7 +286,13 @@ export const CardDetailPage = () => {
                             </div>
 
                             <EditableField label="Email" field="email" value={formData.email} icon={Mail} />
-                            <EditableField label="電話番号" field="phone" value={formData.phone} icon={Phone} />
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <EditableField label="携帯電話" field="mobile" value={formData.mobile} icon={Phone} />
+                                <EditableField label="固定電話" field="phone" value={formData.phone} icon={Phone} />
+                            </div>
+
+                            <EditableField label="FAX" field="fax" value={formData.fax} icon={Phone} />
 
                             <EditableField label="住所" field="address" value={formData.address} icon={MapPin} />
                             <EditableField label="Webサイト" field="website" value={formData.website} icon={Globe} />
