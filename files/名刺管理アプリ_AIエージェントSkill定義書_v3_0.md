@@ -1,8 +1,8 @@
 # 名刺管理アプリ AIエージェント Skill定義書
 
 **作成日:** 2025年1月17日  
-**バージョン:** 2.0  
-**最終更新日:** 2026年1月18日
+**バージョン:** 3.0  
+**最終更新日:** 2026年1月21日
 
 ---
 
@@ -365,6 +365,7 @@ const fallbackExtraction = (text: string): Partial<BusinessCardData> => {
     email: text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)?.[0] || null,
     phone: text.match(/0\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{3,4}/)?.[0] || null,
     mobile: text.match(/0[789]0[-.\s]?\d{4}[-.\s]?\d{4}/)?.[0] || null,
+    fax: text.match(/0\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{3,4}/)?.[0] || null, // 本来はphoneと区別が難しいが例として
     postalCode: text.match(/\d{3}[-]?\d{4}/)?.[0] || null,
     website: text.match(/https?:\/\/[^\s]+/)?.[0] || null,
     // 氏名、会社名等は正規表現では困難なためnull
@@ -1362,3 +1363,4 @@ const decryptApiKey = async (
 |-----|------|------|
 | 1.0 | 2025/01/17 | 初版作成 |
 | 2.0 | 2026/01/18 | OCR Skillの実装をGemini 3 Flash PreviewにImage-to-JSONで統合、responseMimeType: application/jsonを使用する形式に変更。Tesseract.jsへのフォールバックは未実装。 |
+| 3.0 | 2026/01/21 | BusinessCardDataにfaxフィールドを追加し、プロンプトおよびフォールバック抽出処理を更新。 |
